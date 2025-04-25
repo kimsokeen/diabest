@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Result</title>
+</head>
+<body>
+    <h1>Analysis Results</h1>
+    <p><strong>Predicted Class:</strong> {{ predicted_class }}</p>
+    <p><strong>Probability:</strong> {{ probability }}</p>
+    <p><strong>Wound Size (in pixels):</strong> {{ wound_size }}</p>
+    <h2>Overlayed Image</h2>
+    <img src="data:image/png;base64,{{ overlayed_image | b64encode }}" alt="Overlayed Image">
+</body>
+</html>

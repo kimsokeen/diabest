@@ -1,0 +1,2 @@
+Predicted class: Non-Diabetic Foot
+Wound size: 0.00 pixels
