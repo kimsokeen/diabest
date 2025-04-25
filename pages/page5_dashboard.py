@@ -56,10 +56,6 @@ def page5():
     with right_col:
         # This is the box that will cover everything in the left panel
         with st.container(border = True):
-            
-            selected_date = st.date_input("📅 เลือกวันที่:", value=datetime.date.today())
-            if selected_date:
-                st.session_state["selected_date"] = selected_date.strftime('%Y-%m-%d')
 
             results = get_latest_results(st.session_state.username)
             if results:
@@ -74,6 +70,10 @@ def page5():
                     st.write("---")
             else:
                 st.info("ไม่พบผลลัพธ์ล่าสุด กรุณาอัปโหลดรูปภาพเพื่อเริ่มการวิเคราะห์")
+            
+            selected_date = st.date_input("📅 เลือกวันที่:", value=datetime.date.today())
+            if selected_date:
+                st.session_state["selected_date"] = selected_date.strftime('%Y-%m-%d')
 
             if st.button("ยืนยันวันที่ต้องการ"):
                 st.session_state.current_page = "page4"
