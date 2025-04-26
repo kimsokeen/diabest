@@ -4,3 +4,4 @@ pillow
 opencv-python
 streamlit
 libgl1-mesa-glx
+mesa-utils
