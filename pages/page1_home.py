@@ -6,7 +6,7 @@ def page1():
     st.title("Welcome")
 
     # Load and display the logo
-    logo_path = r"C:\keen\project\project\project\assets\logo3_square.png"
+    logo_path = r"assets/logo3_square.png"
     try:
         st.image(
             logo_path,
