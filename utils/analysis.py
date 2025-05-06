@@ -38,7 +38,7 @@ except Exception as e:
 
 try:
     segmentation_model = load_model(
-        r'C:\keen\project\project\project\models\foot_ulcer_model_mobilenet.keras',
+        r'models/foot_ulcer_model_mobilenet.keras',
         custom_objects={'iou_metric': iou_metric, 'dice_loss': dice_loss}
     )
 
