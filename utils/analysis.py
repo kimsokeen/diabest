@@ -28,7 +28,7 @@ def dice_loss(y_true, y_pred):
 # Load pre-trained models for classification and segmentation
 try:
     model = load_model(
-        r'C:\keen\project\project\project\models\mobilenet_model1.h5'
+        r'models/mobilenet_model1.h5'
     )
     print("Classification model loaded successfully.")
     print(model.summary())  # Debug: Print model summary
