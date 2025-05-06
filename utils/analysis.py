@@ -28,7 +28,7 @@ def dice_loss(y_true, y_pred):
 # Load pre-trained models for classification and segmentation
 try:
     model = load_model(
-        r'models/mobilenet_model1.h5'
+        'models/mobilenet_model1.h5'
     )
     print("Classification model loaded successfully.")
     print(model.summary())  # Debug: Print model summary
@@ -38,7 +38,7 @@ except Exception as e:
 
 try:
     segmentation_model = load_model(
-        r'models/foot_ulcer_model_mobilenet.keras',
+        'models/foot_ulcer_model_mobilenet.keras',
         custom_objects={'iou_metric': iou_metric, 'dice_loss': dice_loss}
     )
 
