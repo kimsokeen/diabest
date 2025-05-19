@@ -37,15 +37,16 @@ def page4():
                 
                 summary_text = "\n".join(summary_lines)
 
-                print(f"[DEBUG] Sending email to {email} with result: {result_summary}")
+                print(f"[DEBUG] Sending email to {email} with result: {summary_text}")
 
                 # Call email utility
                 success = send_report_email(
                     to_email=email,
                     full_name=full_name,
                     selected_date=selected_date,
-                    report_summary=summary_text
+                    summary_text=summary_text  # This must match the parameter name in the function
                 )
+
 
                 if success:
                     st.success(f"ส่งอีเมลสำเร็จไปยัง {email}")
