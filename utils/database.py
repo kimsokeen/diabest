@@ -157,7 +157,8 @@ def create_users_table():
                     full_name TEXT NOT NULL,
                     age INTEGER NOT NULL,
                     gender TEXT NOT NULL,
-                    tel TEXT NOT NULL
+                    tel TEXT NOT NULL,
+                    email TEXT NOT NULL
                 )
             ''')
             conn.commit()
