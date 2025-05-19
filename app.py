@@ -11,11 +11,11 @@ from pages.page9_instruction import page9
 from utils.database import create_users_table, create_results_table
 
 st.set_page_config(page_title="Personal Assistance App", layout="centered")
-create_users_table()
-create_results_table()
+
 
 def main():
-    
+    create_users_table()
+    create_results_table()
 
     # Set default page
     if "current_page" not in st.session_state:
