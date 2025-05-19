@@ -127,7 +127,7 @@ def get_user_info(username):
     try:
         conn = create_connection()
         c = conn.cursor()
-        c.execute("SELECT full_name, age, gender, tel FROM users WHERE username = ?", (username,))
+        c.execute("SELECT full_name, age, gender, tel, email FROM users WHERE username = ?", (username,))
         info = c.fetchone()
         conn.close()
         return info  # Now returns full_name, age, gender, tel
