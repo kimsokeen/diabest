@@ -22,7 +22,7 @@ def page3():
                 st.session_state.current_page = "page2"  # Redirect to login page
                 st.rerun()  # Refresh app
             else:
-                st.error("ไม่สามารถสร้างบัญชีได้ ชื่อนีถูกใช้แล้ว")
+                st.error("ไม่สามารถสร้างบัญชีได้ ชื่อนี้ถูกใช้แล้ว")
         else:
             st.error("โปรดใส่ข้อมูลให้ครบถ้วน")
 
