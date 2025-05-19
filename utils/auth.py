@@ -36,7 +36,7 @@ def create_connection():
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-def create_account(username, password, full_name, age, gender, tel):
+def create_account(username, password, full_name, age, gender, tel, email):
     conn = create_connection()
     c = conn.cursor()
     try:
@@ -49,14 +49,15 @@ def create_account(username, password, full_name, age, gender, tel):
             full_name TEXT NOT NULL,
             age INTEGER NOT NULL,
             gender TEXT NOT NULL,
-            tel TEXT NOT NULL
+            tel TEXT NOT NULL,
+            email TEXT NOT NULL
         )
         """)
 
         hashed_password = hash_password(password)  # Hash password before storing
         c.execute(
-            "INSERT INTO users (username, password, full_name, age, gender, tel) VALUES (?, ?, ?, ?, ?, ?)",
-            (username, hashed_password, full_name, age, gender, tel),
+            "INSERT INTO users (username, password, full_name, age, gender, tel, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (username, hashed_password, full_name, age, gender, tel, email),
         )
         conn.commit()
         conn.close()
