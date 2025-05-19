@@ -37,6 +37,7 @@ def page4():
                 
                 summary_text = "\n".join(summary_lines)
 
+                print(f"[DEBUG] Sending email to {email} with result: {result_summary}")
 
                 # Call email utility
                 success = send_report_email(
