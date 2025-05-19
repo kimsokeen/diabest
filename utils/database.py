@@ -184,6 +184,9 @@ def create_users_table():
             ''')
             conn.commit()
             conn.close()
+    except Exception as e:
+        print(f"[ERROR] Failed to create users table: {e}")
+
 
 
 
