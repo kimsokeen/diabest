@@ -7,21 +7,43 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 
+import sqlite3
+import os
+import cv2
+import numpy as np
+from io import BytesIO
+from PIL import Image
+
 def create_results_table():
-    conn = sqlite3.connect('users.db', check_same_thread=False)
-    cursor = conn.cursor()
-    cursor.execute(""" 
-        CREATE TABLE IF NOT EXISTS results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            timestamp DATETIME NOT NULL,
-            result TEXT NOT NULL,
-            wound_size REAL NOT NULL,
-            overlay_resized BLOB
-        )
-    """)
-    conn.commit()
-    conn.close()
+    try:
+        db_path = os.path.abspath("users.db")
+        print(f"[DEBUG] Connecting to database at: {db_path}")
+
+        conn = sqlite3.connect(db_path, check_same_thread=False)
+        cursor = conn.cursor()
+
+        print("[DEBUG] Creating 'results' table if it does not exist...")
+
+        cursor.execute(""" 
+            CREATE TABLE IF NOT EXISTS results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                timestamp DATETIME NOT NULL,
+                result TEXT NOT NULL,
+                wound_size REAL NOT NULL,
+                overlay_resized BLOB
+            )
+        """)
+
+        conn.commit()
+        print("[DEBUG] 'results' table created or already exists.")
+    except sqlite3.Error as e:
+        print(f"[ERROR] Failed to create results table: {e}")
+    finally:
+        if conn:
+            conn.close()
+            print("[DEBUG] Database connection closed.")
+
 
 def get_results_by_date(username, selected_date):
     try:
