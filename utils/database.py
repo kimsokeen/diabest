@@ -142,9 +142,6 @@ def check_database_path():
     return db_path
 
 def create_users_table():
-    """
-    Create the 'users' table in the SQLite users if it doesn't already exist.
-    """
     try:
         conn = create_connection()
         if conn is not None:
@@ -163,8 +160,9 @@ def create_users_table():
             ''')
             conn.commit()
             conn.close()
-            print("Users table created successfully.")
+            print("✅ Users table created or already exists.")
         else:
-            print("Failed to create connection.")
+            print("❌ Failed to connect to DB.")
     except sqlite3.Error as e:
-        print(f"Error creating users table: {e}")
+        print(f"❌ Error creating users table: {e}")
+
