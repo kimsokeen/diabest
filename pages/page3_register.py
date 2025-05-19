@@ -11,11 +11,13 @@ def page3():
     age = st.number_input("อายุ", min_value=0, step=1)
     gender = st.selectbox("เพศ", ["Male", "Female", "Other"])
     tel = st.text_input("เบอร์โทรศัพท์")
+    email = st.text_input("อีเมล") 
+
 
     # Create account button
     if st.button("สร้างบัญชี"):
-        if username and password and full_name and gender and tel:  # Ensure all required fields are filled
-            if create_account(username, password, full_name, age, gender, tel):
+        if username and password and full_name and gender and tel and email:  # Ensure all required fields are filled
+            if create_account(username, password, full_name, age, gender, tel, email):
                 st.success("Account successfully created!")
                 st.session_state.current_page = "page2"  # Redirect to login page
                 st.rerun()  # Refresh app
