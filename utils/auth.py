@@ -62,9 +62,6 @@ def create_account(username, password, full_name, age, gender, tel, email):
         conn.commit()
         conn.close()
         return True
-    except sqlite3.IntegrityError:  # Handles unique constraint failure
-        print("Error: Username already exists.")
-        return False
     except sqlite3.Error as e:
         print("Error creating account:", e)
         return False
