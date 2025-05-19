@@ -44,8 +44,10 @@ def page4():
                     to_email=email,
                     full_name=full_name,
                     selected_date=selected_date,
-                    summary_text=summary_text  # This must match the parameter name in the function
+                    result_summary=summary_text,
+                    wound_size=sum(r[2] for r in results)  # sum of all wound sizes
                 )
+
 
 
                 if success:
