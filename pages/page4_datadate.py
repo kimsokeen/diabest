@@ -3,7 +3,7 @@ from utils.database import get_results_by_date
 from datetime import date
 from helpers import back_button
 from utils.database import get_user_info
-from utils.email_utils import send_report_email
+from utils.email import send_report_email
 
 def page4():
     # Ensure username is in session state
