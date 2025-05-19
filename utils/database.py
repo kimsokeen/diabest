@@ -184,10 +184,10 @@ def create_users_table():
             ''')
             conn.commit()
             conn.close()
-            st.success("✅ Users table created or already exists.")
+            #st.success("✅ Users table created or already exists.")
         else:
-            st.error("❌ Failed to connect to DB.")
+            #st.error("❌ Failed to connect to DB.")
     except sqlite3.Error as e:
-        st.error(f"❌ Error creating users table: {e}")
+        #st.error(f"❌ Error creating users table: {e}")
 
 
