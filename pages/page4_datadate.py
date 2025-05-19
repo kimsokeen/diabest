@@ -30,8 +30,12 @@ def page4():
             if user_info and len(user_info) == 5:
                 full_name, age, gender, tel, email = user_info
 
-                # Combine the results into a text summary
+                summary_lines = []
+                for timestamp, result, wound_size, _ in results:
+                    summary_lines.append(f"Time: {timestamp}, Result: {result}, Wound Size: {wound_size:.2f} cm²")
+                
                 summary_text = "\n".join(summary_lines)
+
 
                 # Call email utility
                 success = send_report_email(
