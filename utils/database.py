@@ -141,6 +141,8 @@ def check_database_path():
     print("Database path:", db_path)
     return db_path
 
+import streamlit as st  # add this if not already
+
 def create_users_table():
     try:
         conn = create_connection()
@@ -160,9 +162,10 @@ def create_users_table():
             ''')
             conn.commit()
             conn.close()
-            print("✅ Users table created or already exists.")
+            st.success("✅ Users table created or already exists.")
         else:
-            print("❌ Failed to connect to DB.")
+            st.error("❌ Failed to connect to DB.")
     except sqlite3.Error as e:
-        print(f"❌ Error creating users table: {e}")
+        st.error(f"❌ Error creating users table: {e}")
+
 
