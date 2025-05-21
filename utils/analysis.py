@@ -260,110 +260,80 @@ def analyze_colors_and_generate_masks(wound_only_array):
 
 def analyze_image(image):
     try:
-        
-        # Resize and split image into 9 grids (Check)
         resized_padded_image, middle_grid = resize_and_split_image(image)
         if resized_padded_image is None or middle_grid is None:
             raise ValueError("Image processing failed, unable to resize and split the image correctly.")
-        
-        # Now process middle grid for coin detection (Check if radius is detected)
+
+        # Try to detect coin radius
         radius = find_coin_radius(middle_grid)
-        if radius is None:
-            raise ValueError("Coin radius detection failed in the middle grid.")
+        coin_found = radius is not None
+        pixels_per_cm = radius  # Rename for clarity later
 
         # Resize for classification model
         classification_input = resized_padded_image.resize((224, 224))
-
-        # Convert to numpy array and normalize (if required by the model)
-        classification_input = np.array(classification_input).astype(np.float32) / 255.0  # Normalize to [0, 1]
-
-        # Add batch dimension
+        classification_input = np.array(classification_input).astype(np.float32) / 255.0
         classification_input = np.expand_dims(classification_input, axis=0)
 
         # Classification Prediction
         classification_prediction = model.predict(classification_input)
-        probability = classification_prediction[0][0]  # Probability for class "normal"
-
-        # Interpret the prediction
+        probability = classification_prediction[0][0]
         predicted_class = "Diabetic Foot" if probability < 0.75 else "Non-Diabetic Foot"
 
         if predicted_class == "Diabetic Foot":
-            # Detect coin radius from the middle grid (change from bottom-right to middle)
-            pixels_per_cm = find_coin_radius(middle_grid)
+            # Run segmentation regardless of coin detection
+            segmentation_input = resized_padded_image.resize((256, 256))
+            segmentation_input = np.array(segmentation_input).astype(np.float32) / 255.0
+            segmentation_input = np.expand_dims(segmentation_input, axis=0)
 
-            if pixels_per_cm:
-                # Resize for segmentation model
-                segmentation_input = resized_padded_image.resize((256, 256))
+            segmentation_output = segmentation_model.predict(segmentation_input)[0, :, :, 0]
+            mask = preprocess_segmentation_output(segmentation_output)
 
-                # Convert to numpy array and normalize (if required by the model)
-                segmentation_input = np.array(segmentation_input).astype(np.float32) / 255.0  # Normalize to [0, 1]
+            original_image_array = np.array(resized_padded_image).astype(np.uint8)
+            mask_expanded = np.expand_dims(mask, axis=-1)
+            mask_expanded = np.repeat(mask_expanded, 3, axis=-1)
+            wound_only_image = np.where(mask_expanded, original_image_array, [0, 0, 225])
+            overlay = np.where(mask_expanded, original_image_array, original_image_array * 0.7)
 
-                # Add batch dimension
-                segmentation_input = np.expand_dims(segmentation_input, axis=0)
+            color_analysis, color_masks = analyze_colors_and_generate_masks(np.array(wound_only_image).astype(np.uint8))
 
-                # Segmentation Prediction
-                segmentation_output = segmentation_model.predict(segmentation_input)[0, :, :, 0]
+            total_wound_area = np.sum(mask)  # in pixels
 
-                # Lower threshold if needed
-                mask = preprocess_segmentation_output(segmentation_output)
+            # Handle wound size (pixels or cm²)
+            if coin_found and pixels_per_cm > 0:
+                wound_size = float(total_wound_area) / (pixels_per_cm ** 2)  # cm²
+            else:
+                wound_size = f"{int(total_wound_area)} pixels"
 
-                # Extract wound region
-                original_image_array = np.array(resized_padded_image).astype(np.uint8)
-                mask_expanded = np.expand_dims(mask, axis=-1)
-                mask_expanded = np.repeat(mask_expanded, 3, axis=-1)
-                wound_only_image = np.where(mask_expanded, original_image_array, [0, 0, 225])
+            # Color analysis highlights
+            color_highlights = {}
+            highlight_colors = {
+                "Red": [255, 0, 0],
+                "White_Yellow": [255, 255, 0],
+                "Black": [0, 255, 0],
+            }
 
-                # Overlay mask
-                overlay = np.where(mask_expanded, original_image_array, original_image_array * 0.7)
+            color_percentages = {}
+            for color_name, highlight_color in highlight_colors.items():
+                if color_name in color_masks:
+                    color_in_wound = np.sum(color_masks[color_name] * mask)
+                    color_in_wound_percentage = (color_in_wound / total_wound_area) * 100 if total_wound_area > 0 else 0
+                    color_percentages[f"{color_name} (Wound)"] = color_in_wound_percentage
 
-                # Perform color analysis
-                color_analysis, color_masks = analyze_colors_and_generate_masks(np.array(wound_only_image).astype(np.uint8))
+                    highlight_image = np.zeros_like(original_image_array)
+                    highlight_image[color_masks[color_name] > 0] = highlight_color
+                    color_highlights[color_name] = Image.fromarray(highlight_image)
 
-                # Total area of the image and the wound
-                total_image_area = original_image_array.size  # Total number of pixels
-                total_wound_area = np.sum(mask)  # Total pixels in the wound
+            total_colored_area = sum(color_percentages.values())
+            color_percentages["Other (Wound)"] = max(0.0, 100.0 - total_colored_area)
 
-                # Ensure wound_size is a valid numeric value (int or float)
-                wound_size = float(total_wound_area) / (pixels_per_cm ** 2)  # Convert to cm²
+            return predicted_class, probability, wound_size, overlay, wound_only_image, color_percentages, color_highlights, coin_found
 
-                # Generate color highlights
-                color_highlights = {}
-                highlight_colors = {
-                    "Red": [255, 0, 0],   # Red in RGB
-                    "White_Yellow": [255, 255, 0], # Combined white-yellow (yellow)
-                    "Black": [0, 255, 0],  # Green for Black
-                }
-
-                color_percentages = {}
-                for color_name, highlight_color in highlight_colors.items():
-                    if color_name in color_masks:
-                        # Masked color area within the wound
-                        color_in_wound = np.sum(color_masks[color_name] * mask)  # Only color pixels in the wound
-                        color_in_wound_percentage = (color_in_wound / total_wound_area) * 100 if total_wound_area > 0 else 0
-
-                        # Save wound color percentages
-                        color_percentages[f"{color_name} (Wound)"] = color_in_wound_percentage
-
-                        # Highlight image generation
-                        highlight_image = np.zeros_like(original_image_array)
-                        highlight_image[color_masks[color_name] > 0] = highlight_color
-                        color_highlights[color_name] = Image.fromarray(highlight_image)
-
-                # Adjust "Other" category to make percentages sum to 100% in the wound area
-                total_colored_area = sum(color_percentages.values())
-                if total_colored_area < 100.0:
-                    color_percentages["Other (Wound)"] = 100.0 - total_colored_area
-                else:
-                    color_percentages["Other (Wound)"] = 0.0
-
-                return predicted_class, probability, wound_size, overlay, wound_only_image, color_percentages, color_highlights
-        
         else:
-            return predicted_class, probability, 0, None, None, {}, {}
+            return predicted_class, probability, 0, None, None, {}, {}, True  # Assume coin found doesn't matter
 
     except Exception as e:
         st.error(f"Error in analyze_image: {traceback.format_exc()}")
-        return None, None, None, None, None, {}, {}
+        return None, None, None, None, None, {}, {}, False
 
     
 def display_color_highlights(color_highlights):
