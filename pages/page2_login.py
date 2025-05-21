@@ -18,7 +18,7 @@ def page2():
                 st.session_state.current_page = "page5"  # Go to Dashboard
                 st.rerun()  # Refresh page
             else:
-                st.error("รหัสผ่านไมถูกต้อง")
+                st.error("รหัสผ่านไม่ถูกต้อง")
         else:
             st.error("โปรดใส่ข้อมูลให้ครบถ้วน")
 
