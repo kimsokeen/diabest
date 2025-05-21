@@ -41,13 +41,12 @@ def page6():
             return
 
 
-        # Step 3: Analyze button logic
+                # Step 3: Analyze button logic
         if st.button("ประมวลผล"):
             st.write("เริ่มทำการประมวลผล..")
 
-
             try:
-                # Call the analyze_image function
+                # Call the updated analyze_image function (with coin_found)
                 (
                     predicted_class,
                     probability,
@@ -56,14 +55,8 @@ def page6():
                     wound_only_resized,
                     color_analysis,
                     color_highlights,
+                    coin_found,  # NEW
                 ) = analyze_image(image_data)
-
-
-                # Debugging: Print raw model output and probability
-                #st.write(f"Debug: Predicted Class = {predicted_class}")
-                #st.write(f"Debug: Probability = {probability}")
-                #st.write(f"Debug: Wound Size (pixels) = {wound_size}")
-
 
             except ValueError as e:
                 st.error(f"Analysis failed: {e}")
@@ -75,15 +68,21 @@ def page6():
                 st.write(f"Traceback: {traceback.format_exc()}")
                 return
 
-
             # Step 4: Display results or handle errors
             if probability is not None and wound_size is not None:
-                wound_size_cm = wound_size # Convert pixels to cm²
-
+                # Show warning if coin was not found
+                if not coin_found:
+                    st.warning("⚠️ ไม่พบเหรียญในภาพ ระบบจะแสดงขนาดแผลในหน่วยพิกเซลแทน")
 
                 # Display classification result and wound size
                 st.success(f"ผลการตรวจ: {predicted_class}")
-                st.info(f"ขนาดของแผล: {wound_size_cm:.2f} cm²")
+
+                if isinstance(wound_size, str):
+                    st.info(f"ขนาดของแผล: {wound_size}")  # wound_size is a string like "12345 pixels"
+                    wound_size_cm = None  # To avoid saving to DB
+                else:
+                    st.info(f"ขนาดของแผล: {wound_size:.2f} cm²")
+                    wound_size_cm = wound_size  # Will be saved to DB
 
                 col1, col2 = st.columns(2)
 
@@ -92,18 +91,16 @@ def page6():
                     if overlay_resized.dtype != np.uint8:
                         overlay_resized = np.clip(overlay_resized, 0, 255).astype(np.uint8)
                     with col1:
-                        st.image(overlay_resized, caption="Overlayed Image", width = 300)
+                        st.image(overlay_resized, caption="Overlayed Image", width=300)
                 else:
                     st.error("Error during segmentation. No overlay available.")
-
 
                 # Display wound area
                 if wound_only_resized is not None and wound_only_resized.size > 0:
                     with col2:
-                        st.image(wound_only_resized, caption="Wound Area", width = 300)
+                        st.image(wound_only_resized, caption="Wound Area", width=300)
                 else:
                     st.error("ไม่พบแผลเบาหวาน")
-
 
                 # Display color analysis
                 if color_analysis:
@@ -111,19 +108,19 @@ def page6():
                     for color, percentage in color_analysis.items():
                         st.write(f"- {color}: {percentage:.2f}%")
 
-
                     # Display color highlights
                     if color_highlights:
                         display_color_highlights(color_highlights)
 
-
-                # Save the results
+                # Save the results (only if wound_size is in cm²)
+                if wound_size_cm is not None:
                     try:
-                        save_result_to_db(st.session_state.username, predicted_class, wound_size_cm, timestamp , overlay_resized)
+                        save_result_to_db(st.session_state.username, predicted_class, wound_size_cm, timestamp, overlay_resized)
                         st.success("ข้อมูลถูกบันทึกลงในระบบเรียบร้อย")
                     except Exception as e:
                         st.warning(f"Error saving results lol: {e}")
-
+                else:
+                    st.info("ระบบไม่ได้บันทึกขนาดแผล เพราะไม่พบเหรียญอ้างอิง")
 
                 # Finish button
                 if st.button("เสร็จสิ้น"):
@@ -131,6 +128,7 @@ def page6():
             else:
                 st.error("Failed to analyze the image. Please try again.")
                 st.write("Debugging logs: Check the console for details.")
+
 
 
 
