@@ -76,7 +76,7 @@ def page6():
 
                 # Display classification result and wound size
                 st.success(f"ผลการตรวจ: {predicted_class}")
-                st.info(f"ความมั่นใจของโมเดล: {probability:.2f}")
+                #st.info(f"ความมั่นใจของโมเดล: {probability:.2f}")
 
                 if isinstance(wound_size, str):
                     st.info(f"ขนาดของแผล: {wound_size}")  # wound_size is a string like "12345 pixels"
