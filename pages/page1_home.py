@@ -7,7 +7,7 @@ def page1():
     with col2:
         # Centered title
         st.markdown("<h1 style='text-align: center;'>Welcome</h1>", unsafe_allow_html=True)
-
+        st.write("")
         # Display centered logo
         logo_path = "assets/logo3_square.png"
         try:
