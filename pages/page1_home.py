@@ -1,7 +1,7 @@
 import streamlit as st
 
-# Function to display the "Get Started" page
 def page1():
+    # Add CSS to set background to white and text to black
     st.markdown("""
         <style>
             body {
@@ -31,11 +31,10 @@ def page1():
     # Add vertical spacing
     st.markdown("<br><br><br>", unsafe_allow_html=True)
 
-    # Center the button horizontally
-    col1, col2, col3 = st.columns([1, 1, 1])  # Equal spacing for centering
+    # Center the button horizontally using columns
+    col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        st.markdown("<br><br>", unsafe_allow_html=True)  # Extra spacing before the button
+        st.markdown("<br><br>", unsafe_allow_html=True)
         if st.button("Get Started"):
-            # Update session state and simulate page reload
-            st.session_state['current_page'] = "page2"  # Navigate to the Login page
-            st.stop()  # Stop the execution of the current script
+            st.session_state['current_page'] = "page2"
+            st.stop()
