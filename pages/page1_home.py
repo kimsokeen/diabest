@@ -1,37 +1,43 @@
 import streamlit as st
 
 def page1():
-    # Add CSS to set background to white and text to black
+    # Apply custom CSS for background, text, and button styling
     st.markdown("""
         <style>
-            body {
+            body, .stApp {
                 background-color: white;
                 color: black;
             }
-            .stApp {
+            /* Style Streamlit buttons */
+            div.stButton > button {
                 background-color: white;
+                color: black;
+                border: 1px solid black;
+                padding: 0.5em 1.5em;
+                font-weight: bold;
+                border-radius: 6px;
+            }
+            div.stButton > button:hover {
+                background-color: #f0f0f0;
                 color: black;
             }
         </style>
     """, unsafe_allow_html=True)
 
-    # Set the page title
+    # Title
     st.title("Welcome")
 
-    # Load and display the logo
+    # Logo
     logo_path = "assets/logo3_square.png"
     try:
-        st.image(
-            logo_path,
-            width=300,  # Set the desired width here (e.g., 300 pixels)
-        )
+        st.image(logo_path, width=300)
     except FileNotFoundError:
         st.error(f"Logo file not found at {logo_path}. Please check the file path.")
 
-    # Add vertical spacing
+    # Space
     st.markdown("<br><br><br>", unsafe_allow_html=True)
 
-    # Center the button horizontally using columns
+    # Button
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         st.markdown("<br><br>", unsafe_allow_html=True)
