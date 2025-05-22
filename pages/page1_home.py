@@ -20,7 +20,7 @@ def page1():
 
     # Center the button using columns
     bcol1, bcol2, bcol3, bcol4, bcol5 = st.columns([1, 1, 1, 1, 1])
-    with bcol2:
+    with bcol3:
         if st.button("Get Started"):
             st.session_state['current_page'] = "page2"
             st.stop()
