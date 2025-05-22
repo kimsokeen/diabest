@@ -93,15 +93,15 @@ def page6():
                         overlay_resized = np.clip(overlay_resized, 0, 255).astype(np.uint8)
                     with col1:
                         st.image(overlay_resized, caption="Overlayed Image", width=300)
-                else:
-                    st.error("Error during segmentation. No overlay available.")
+                #else:
+                    #st.error("Error during segmentation. No overlay available.")
 
                 # Display wound area
                 if wound_only_resized is not None and wound_only_resized.size > 0:
                     with col2:
                         st.image(wound_only_resized, caption="Wound Area", width=300)
-                else:
-                    st.error("ไม่พบแผลเบาหวาน")
+                #else:
+                   # st.error("ไม่พบแผลเบาหวาน")
 
                 # Display color analysis
                 if color_analysis:
