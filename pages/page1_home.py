@@ -1,26 +1,49 @@
 import streamlit as st
 
 def page1():
-    # Create three equal-width columns to center content
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Load your logo path
+    logo_path = "assets/logo3_square.png"
 
-    with col2:
-        # Centered title
-        st.markdown("<h1 style='text-align: center;'>Welcome</h1>", unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        # Display centered logo
-        logo_path = "assets/logo3_square.png"
-        try:
-            st.image(logo_path, width=300)
-        except FileNotFoundError:
-            st.error(f"Logo file not found at {logo_path}. Please check the file path.")
+    # Custom HTML and CSS for full centering
+    st.markdown(f"""
+        <style>
+            .center-container {{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                height: 90vh;
+            }}
+            .center-container img {{
+                width: 300px;
+                max-width: 80vw;
+                margin-bottom: 30px;
+            }}
+            .center-container button {{
+                padding: 0.7em 2em;
+                font-size: 1.1em;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }}
+            .center-container button:hover {{
+                background-color: #45a049;
+            }}
+        </style>
 
-        # Vertical spacing
-        st.markdown("<br><br>", unsafe_allow_html=True)
+        <div class="center-container">
+            <h1>Welcome</h1>
+            <img src="{logo_path}" alt="Logo">
+            <form action="/" method="post">
+                <button type="submit">Get Started</button>
+            </form>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # Center the button using columns
-    bcol1, bcol2, bcol3, bcol4, bcol5 = st.columns([1, 1, 1, 1, 1])
-    with bcol3:
-        if st.button("Get Started"):
-            st.session_state['current_page'] = "page2"
-            st.stop()
+    # Handle the button manually with session state (since HTML form doesn't set Streamlit state)
+    if st.query_params.get("start") == "1" or st.button("Get Started"):
+        st.session_state['current_page'] = "page2"
+        st.stop()
